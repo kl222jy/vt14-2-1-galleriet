@@ -18,6 +18,14 @@ textarea {
     max-width: 280px;
 }
 
+.uploadedImages {
+    background-color: #808080;
+    border-radius: 5px;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    margin-bottom: 20px;
+    height: 60px;
+}
 
 /* Responsive: Portrait tablets and up */
 @media screen and (min-width: 768px) {
