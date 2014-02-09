@@ -22,10 +22,9 @@
     <div class="row">
         <div class="col-md-12 uploadedImages">
             <ul class="list-inline galleryImages">
-                <%--<asp:ListView ID="SavedImages" runat="server" ItemType="_2_1_Galleriet.Model.Gallery.ImageItem" SelectMethod="SavedImages_GetData">--%>
                 <asp:ListView ID="SavedImages" runat="server" ItemType="_2_1_Galleriet.Model.Gallery+ImageItem">
                     <ItemTemplate>
-                        <li><a href="<%# Item.href %>">
+                        <li <%# isActive(Item.fileName) %>><a href="<%# Item.href %>">
                             <img src="<%# Item.thumburl %>" /></a></li>
                     </ItemTemplate>
                 </asp:ListView>

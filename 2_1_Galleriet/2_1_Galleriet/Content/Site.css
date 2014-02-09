@@ -27,6 +27,14 @@ textarea {
     height: 60px;
 }
 
+.galleryImages .active {
+    background-color: green;
+}
+
+.galleryImages li:hover {
+    background-color: #000;
+}
+
 /* Responsive: Portrait tablets and up */
 @media screen and (min-width: 768px) {
     .jumbotron {

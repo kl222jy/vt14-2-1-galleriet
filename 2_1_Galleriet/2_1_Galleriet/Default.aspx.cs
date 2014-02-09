@@ -32,25 +32,34 @@ namespace _2_1_Galleriet
 
             var fileContent = ImageFileUpload.FileContent;
 
-            //Försök spara bilden, result = textsträng som förklarar hur det gick
-            string result = Model.Gallery.SaveImage(fileContent, fileName);
-
-            if (result == "Uppladdningen lyckades.")
+            //Försök spara bilden
+            try
             {
+                string result = Model.Gallery.SaveImage(fileContent, fileName);
                 SuccessPanel.Visible = true;
             }
-            else
+            catch (Exception ex)
             {
                 ModelValidator.IsValid = false;
                 FailPanel.Visible = true;
-                FailLiteral.Text = ", " + result;
+                FailLiteral.Text = ", " + ex.Message;
             }
+ 
         }
 
         //Metod som kopplas till listview för att visa bildlista
         public IEnumerable<Model.Gallery.ImageItem> SavedImages_GetThumbs()
         {
             return Model.Gallery.GetImageItems;
+        }
+
+        public string isActive(string fileName)
+        {
+            if (fileName == Request.QueryString["image"])
+            {
+                return "class='active'";
+            }
+            return null;
         }
     }
 }

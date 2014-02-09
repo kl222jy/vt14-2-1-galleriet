@@ -99,25 +99,39 @@ namespace _2_1_Galleriet.Model
             //Tar bort otillåtna tecken från filnamnet
             fileName = SanitizePath.Replace(fileName, "");
 
+            string tempFileName = fileName;
+
             //Borde aldrig inträffa, men om samtliga tecken städats bort bör filen inte sparas
             if (string.IsNullOrWhiteSpace(fileName))
             {
-                return "filnamnet är tomt eller innehöll bara ogiltiga tecken";
+                throw new ArgumentException("filnamnet är tomt eller innehöll bara ogiltiga tecken");
             }
-
-
-            //if (ImageExists(fileName))
-            //{
-            //    return "filnamnet används redan.";
-            //}
 
             var isNumber = new Regex(@"\d");
 
             //Kontrollera att filnamnet inte redan existerar..
             while (ImageExists(fileName))
             {
-                var sb = new StringBuilder(fileName);
+                using (var savedFile = File.OpenRead(Path.Combine(PhysicalUploadedImagesPath, fileName)))
+                {
+                    if (savedFile.Length == stream.Length)
+                    {
+                        //Varför fungerar inget av nedanstående? (provade först enbart stream.equals)
+                        //Jämförelsen skulle dessutom behöva göras gentemot samtliga filer på servern för att nå denna nivå av nogrannhet, så jag släppte det.
+                        //if (savedFile.GetHashCode() == stream.GetHashCode())
+                        //{
+                        //    if (Stream.Equals(savedFile, stream))
+                        //    {
+                        //        return "bilden finns redan på servern.";
+                        //    }
+                        //    return "det finns redan en fil med samma namn, storlek och hash.";
+                        //}
+ 
+                        throw new ArgumentException("det finns redan en fil med samma namn och storlek.");
+                    }
+                }
 
+                var sb = new StringBuilder(fileName);
                 //Kontrollera om sista tecken innan filändelse är en siffra, öka isf med 1
                 if (isNumber.IsMatch(fileName.Substring(fileName.Length - 5, 1)))
                 {
@@ -136,30 +150,28 @@ namespace _2_1_Galleriet.Model
                 fileName = sb.ToString();
             }
 
-
-
-            //Bild från stream
-            Image tempImage = System.Drawing.Image.FromStream(stream);
-            //Thumb från bild
-            Image tempThumb = tempImage.GetThumbnailImage(60, 45, null, System.IntPtr.Zero);
-
-            //Kontrollera att bilden har ett tillåtet format
-            if (!IsValidImage(tempImage))
-            {
-                return "bildfilen accepteras inte av servern.";
-            }
-
             try
             {
+                //Bild från stream
+                Image tempImage = System.Drawing.Image.FromStream(stream);
+                //Thumb från bild
+                Image tempThumb = tempImage.GetThumbnailImage(60, 45, null, System.IntPtr.Zero);
+
+                //Kontrollera att bilden har ett tillåtet format
+                if (!IsValidImage(tempImage))
+                {
+                    throw new ArgumentException("bildfilen accepteras inte av servern.");
+                }
+
                 tempImage.Save(Path.Combine(PhysicalUploadedImagesPath, fileName));
                 tempThumb.Save(Path.Combine(PhysicalUploadedImagesPath, "thumb_" + fileName));
             }
             catch (Exception)
             {
-                return "något gick snett när bilden skulle sparas.";
+                throw new ArgumentException("något gick snett när bilden skulle sparas.");
             }
 
-            return "Uppladdningen lyckades.";
+            return fileName;
         }
 
         public struct ImageItem
@@ -167,6 +179,7 @@ namespace _2_1_Galleriet.Model
             public string thumburl;
             public string imageurl;
             public string href;
+            public string fileName;
         }
 
         //Returnerar alla bilder som ImageItem för smidig hantering
@@ -184,6 +197,7 @@ namespace _2_1_Galleriet.Model
                         item.href = "/?image=" + fileName;
                         item.imageurl = "GalleryImages/" + fileName;
                         item.thumburl = "GalleryImages/thumb_" + fileName;
+                        item.fileName = fileName;
                         images.Add(item);
                     }
                 }
