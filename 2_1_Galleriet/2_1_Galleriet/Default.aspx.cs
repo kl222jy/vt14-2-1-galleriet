@@ -44,7 +44,7 @@ namespace _2_1_Galleriet
                 string result = Model.Gallery.SaveImage(fileContent, fileName);
                 SuccessPanel.Visible = true;
             }
-            catch (ArgumentException ex)
+            catch (Exception ex)
             {
                 ModelValidator.IsValid = false;
                 FailPanel.Visible = true;
