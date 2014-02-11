@@ -1,4 +1,5 @@
-﻿using System;
+﻿using _2_1_Galleriet.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -10,6 +11,14 @@ namespace _2_1_Galleriet
 {
     public partial class _Default : Page
     {
+        private Service _service;
+
+        private Service Service {
+            get 
+            {
+                return _service ?? (_service = new Service());
+            }
+        }
         protected void Page_Load(object sender, EventArgs e)
         {
             //Vilken bild som ska visas i stort format
@@ -20,9 +29,6 @@ namespace _2_1_Galleriet
             {
                 CurrentImage.ImageUrl = "GalleryImages/" + currentImage;
             }
-
-            //Vad som ska visas i bildlistan, sätts här för att förändringar ska visas.
-            SavedImages.SelectMethod = "SavedImages_GetThumbs";
         }
 
         //Bilduppladdning
@@ -38,19 +44,27 @@ namespace _2_1_Galleriet
                 string result = Model.Gallery.SaveImage(fileContent, fileName);
                 SuccessPanel.Visible = true;
             }
-            catch (Exception ex)
+            catch (ArgumentException ex)
             {
                 ModelValidator.IsValid = false;
                 FailPanel.Visible = true;
-                FailLiteral.Text = ", " + ex.Message;
+
+                //Skriv enbart ut meddelanden för egenhändigt kastade undantag (borde varit en customexception för att inte fånga andra fel)
+                if (ex is ArgumentException)
+                {
+                    FailLiteral.Text = ", " + ex.Message;
+                }
+                else
+                {
+                    FailLiteral.Text = "Något gick snett";
+                }
             }
- 
         }
 
         //Metod som kopplas till listview för att visa bildlista
-        public IEnumerable<Model.Gallery.ImageItem> SavedImages_GetThumbs()
+        public IEnumerable<GalleryItem> SavedImages_GetThumbs()
         {
-            return Model.Gallery.GetImageItems;
+            return Service.GetImageItems(); //Service.GetCachedImageItems();
         }
 
         public string isActive(string fileName)

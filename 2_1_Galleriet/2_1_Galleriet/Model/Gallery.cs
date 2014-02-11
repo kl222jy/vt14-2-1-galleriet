@@ -173,36 +173,5 @@ namespace _2_1_Galleriet.Model
 
             return fileName;
         }
-
-        public struct ImageItem
-        {
-            public string thumburl;
-            public string imageurl;
-            public string href;
-            public string fileName;
-        }
-
-        //Returnerar alla bilder som ImageItem för smidig hantering
-        public static IEnumerable<ImageItem> GetImageItems
-        {
-            get
-            {
-                var images = new List<ImageItem>(10);
-                foreach (string fileName in GetImageNames())
-                {
-                    var isThumb = new Regex("^(thumb_).*");
-                    if (!isThumb.IsMatch(fileName))
-                    {
-                        ImageItem item = new ImageItem();
-                        item.href = "/?image=" + fileName;
-                        item.imageurl = "GalleryImages/" + fileName;
-                        item.thumburl = "GalleryImages/thumb_" + fileName;
-                        item.fileName = fileName;
-                        images.Add(item);
-                    }
-                }
-                return images;
-            }
-        }
     }
 }

@@ -1,4 +1,4 @@
-﻿<%@ master language="C#" autoeventwireup="true" codebehind="Site.master.cs" inherits="_2_1_Galleriet.SiteMaster" %>
+﻿<%@ master language="C#" autoeventwireup="true" codebehind="Site.master.cs" inherits="_2_1_Galleriet.SiteMaster" ViewStateMode="Disabled" %>
 
 <!DOCTYPE html>
 
